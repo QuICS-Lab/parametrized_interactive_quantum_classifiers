@@ -20,20 +20,7 @@ def iqc_multidimensional(
     N_qubits_tgt=None,
     load_inputvector_env_state=False,
 ):
-    """
-    IQC multidimensional baseado em iqc_zhangetal.
-
-    Parametrização:
-        vector_ws = [bias, w_1, ..., w_Ne]
-
-    onde cada w_i possui a mesma dimensão de vector_x. Assim,
-
-        diag(sigma_E)_i = <w_i, x>.
-
-    A quantidade total de parâmetros treináveis é:
-
-        1 + N_e * len(vector_x).
-    """
+    """Evaluate the multidimensional IQC with ``vector_ws = [bias, w_1, ..., w_Ne]``."""
     c1 = vector_alpha[0]
     c2 = vector_alpha[1]
     c3 = vector_alpha[2]
@@ -50,9 +37,9 @@ def iqc_multidimensional(
     expected_weights = N_e * N_features
     if vector_ws.shape[0] != expected_weights:
         raise ValueError(
-            "Quantidade inválida de pesos: esperado "
+            "Invalid weight count: expected "
             f"1 + N_e * n_features = 1 + {N_e} * {N_features} = "
-            f"{1 + expected_weights} parâmetros, mas foram recebidos "
+            f"{1 + expected_weights} parameters, but received "
             f"{1 + vector_ws.shape[0]}."
         )
 
@@ -77,7 +64,7 @@ def iqc_multidimensional(
 
     sigmaQ = jnp.asarray(sigmaQ, dtype=jnp.complex64)
 
-    # Cada linha representa um vetor w_i com dim(w_i) = dim(x).
+    # Each row represents a weight vector w_i with dim(w_i) = dim(x).
     matrix_ws = jnp.asarray(vector_ws, dtype=jnp.float32).reshape(
         N_e,
         N_features,
@@ -88,23 +75,20 @@ def iqc_multidimensional(
             jnp.linalg.norm(matrix_ws, axis=1, keepdims=True) + 1e-16
         )
 
-    # Nova definição: uma entrada diagonal para cada produto interno w_i^T x.
+    # Each diagonal entry is the inner product w_i^T x.
     sigmaE_diagonal = matrix_ws @ vector_x
     sigmaE = jnp.diag(sigmaE_diagonal)
 
-    # O ambiente passa a ter dimensão N_e, a mesma dimensão de sigmaE.
     p_env = jnp.ones((N_e, 1), dtype=jnp.float32) / jnp.sqrt(N_e)
     p_env = p_env @ p_env.T
 
     p_cog = jnp.ones((2, 1), dtype=jnp.float32) / jnp.sqrt(2)
     p_cog = p_cog @ p_cog.T
 
-    # Mantido apenas por compatibilidade de assinatura. O novo modelo codifica
-    # x em cada produto interno w_i^T x que compõe sigmaE.
     if load_inputvector_env_state:
         raise ValueError(
-            "iqc_multidimensional não usa load_inputvector_env_state=True, "
-            "pois a dimensão do ambiente é N_e e cada entrada de sigmaE é w_i^T x."
+            "iqc_multidimensional does not support load_inputvector_env_state=True; "
+            "the environment dimension is N_e and each sigmaE entry is w_i^T x."
         )
 
     U_operator = get_U_operator_jax(sigmaQ, sigmaE)

@@ -1,19 +1,11 @@
-from iqc_multitargets import iqc_de_multi_target, iqc_multidimensional_multi_target
+# from iqc_multitargets import iqc_de_multi_target, iqc_multidimensional_multi_target
 from iqc_zhangetal import iqc_zhangetal, iqc_britoetal
 from iqc_multdimensional import iqc_multidimensional
 from iqc_de import iqc_de, next_power_of_two
 from sklearn.datasets import load_iris, load_wine, make_blobs, make_circles, make_moons
 
 def generate_models_in_dictionary(number_of_features):
-    """
-    Gera um dicionário com os modelos IQC e o número de parâmetros treináveis.
-
-    Parâmetros:
-        number_of_features: Número de características (features) do conjunto de dados.
-
-    Retorna:
-        dicModels: Dicionário contendo os modelos IQC e o número de parâmetros treináveis.
-    """
+    """Return IQC models and their number of trainable parameters."""
 
     dicModels = {
                     "iqc_zhangetal": 
@@ -36,22 +28,22 @@ def generate_models_in_dictionary(number_of_features):
                     "iqc_multidimensional_2":
                     {
                         'iqc': iqc_multidimensional,
-                        'number_of_params': number_of_features*2 + 4 + 1  # +1 for
+                        'number_of_params': number_of_features * 2 + 4 + 1,
                     },
                     "iqc_multidimensional_4":
                     {
                         'iqc': iqc_multidimensional,
-                        'number_of_params': number_of_features*4 + 4 + 1  # +1 for
+                        'number_of_params': number_of_features * 4 + 4 + 1,
                     },
                     "iqc_multidimensional_8":
                     {
                         'iqc': iqc_multidimensional,
-                        'number_of_params': number_of_features*8 + 4 + 1  # +1 for
+                        'number_of_params': number_of_features * 8 + 4 + 1,
                     },
                     "iqc_de":
                     {
                         'iqc': iqc_de,
-                        'number_of_params': next_power_of_two(number_of_features)*next_power_of_two(number_of_features)  + 4 + 1 # +1 for bias 
+                        'number_of_params': next_power_of_two(number_of_features) ** 2 + 5,
                     },
                     
                     # "iqc_de_multitarget_2":
@@ -100,15 +92,7 @@ def generate_models_in_dictionary(number_of_features):
 import numpy as np
 
 def load_dataset(filename):
-    """
-    Carrega uma base armazenada como um arquivo Python contendo:
-
-        X = [...]
-        y = [...]
-
-    Retorna:
-        (X, y)
-    """
+    """Load ``X`` and ``y`` arrays from a Python dataset file."""
     namespace = {}
     with open(filename, "r") as f:
         exec(f.read(), namespace)
@@ -119,12 +103,7 @@ def load_dataset(filename):
     return X, y
 
 def generate_binary_classification_datasets():
-    """
-    Gera um dicionário com conjuntos de dados para classificação binária.
-
-    Retorna:
-        data_bases_binary_classification: Dicionário contendo os conjuntos de dados.
-    """
+    """Return the binary classification datasets used by the experiments."""
     data_bases_binary_classification = {
         "blobs_2D": make_blobs(n_samples=300, n_features=2, centers=2, cluster_std=1.0, random_state=42),
         "blobs_4D": make_blobs(n_samples=300, n_features=4, centers=2, cluster_std=1.0, random_state=42),
@@ -156,7 +135,7 @@ def generate_multiclass_datasets():
     
 
     data_multiclass_bases = {
-        # Bases reais
+        # Real-world datasets
         "iris": (
             load_iris().data,
             load_iris().target,
@@ -176,9 +155,5 @@ def generate_multiclass_datasets():
             y_caesarian,
         ),
 
-        #"breast_cancer": (
-        #    load_breast_cancer().data,
-        #    load_breast_cancer().target,
-        #)
     }
     return data_multiclass_bases

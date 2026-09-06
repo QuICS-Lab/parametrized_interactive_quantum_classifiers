@@ -2,10 +2,6 @@
 
 import jax
 from jax import numpy as jnp
-import optax
-import jax
-from jax import numpy as jnp
-import optax
 import numpy as np
 
 
@@ -69,13 +65,8 @@ def iqc_zhangetal(
     ##vector_ws_jnp = jnp.array(vector_ws, dtype=jnp.float32) #[jnp.array(w, dtype=jnp.float32) for w in vector_ws]
     vector_ws = jnp.array(vector_ws, dtype=jnp.float32) #[jnp.array(w, dtype=jnp.float32) for w in vector_ws]
 
-    p_cog_new = p_cog
-    U_operators = []
-    p_out = None
-
-
     if normalize_w:
-        vector_w = vector_w / (jnp.linalg.norm(vector_w) + 1e-16)
+        vector_ws = vector_ws / (jnp.linalg.norm(vector_ws) + 1e-16)
 
     # Equivalent to Eq #15
     if load_inputvector_env_state:
@@ -100,9 +91,7 @@ def iqc_zhangetal(
 
     #sigmaE = jnp.diag(vector_x * vector_w)
     U_operator = get_U_operator_jax(sigmaQ, sigmaE)
-    U_operators.append(U_operator)
-
-    p_cog_env = jnp.kron(p_cog_new, p_env)
+    p_cog_env = jnp.kron(p_cog, p_env)
     p_out = U_operator @ p_cog_env @ jnp.conj(U_operator).T
     p_cog_new = jnp.trace(p_out.reshape([2, N, 2, N]), axis1=1, axis2=3)
 
@@ -112,13 +101,6 @@ def iqc_zhangetal(
     pauli_z = jnp.array([[1, 0], [0, -1]], dtype=jnp.complex64)
     expectation = jnp.real(jnp.trace(p_cog_new @ pauli_z))
 
-    output_dict = {
-        "U_operators": U_operators,
-        "p_00": p_cog_new_00,
-        "p_11": p_cog_new_11,
-    }
-
-    #return expectation, p_cog_new_11, output_dict
     return expectation + bias
 
 
@@ -183,13 +165,8 @@ def iqc_britoetal(
     ##vector_ws_jnp = jnp.array(vector_ws, dtype=jnp.float32) #[jnp.array(w, dtype=jnp.float32) for w in vector_ws]
     vector_ws = jnp.array(vector_ws, dtype=jnp.float32) #[jnp.array(w, dtype=jnp.float32) for w in vector_ws]
 
-    p_cog_new = p_cog
-    U_operators = []
-    p_out = None
-
-
     if normalize_w:
-        vector_w = vector_w / (jnp.linalg.norm(vector_w) + 1e-16)
+        vector_ws = vector_ws / (jnp.linalg.norm(vector_ws) + 1e-16)
 
     # Equivalent to Eq #15
     if load_inputvector_env_state:
@@ -214,9 +191,7 @@ def iqc_britoetal(
 
     #sigmaE = jnp.diag(vector_x * vector_w)
     U_operator = get_U_operator_jax(sigmaQ, sigmaE)
-    U_operators.append(U_operator)
-
-    p_cog_env = jnp.kron(p_cog_new, p_env)
+    p_cog_env = jnp.kron(p_cog, p_env)
     p_out = U_operator @ p_cog_env @ jnp.conj(U_operator).T
     p_cog_new = jnp.trace(p_out.reshape([2, N, 2, N]), axis1=1, axis2=3)
 
@@ -226,13 +201,6 @@ def iqc_britoetal(
     pauli_z = jnp.array([[1, 0], [0, -1]], dtype=jnp.complex64)
     expectation = jnp.real(jnp.trace(p_cog_new @ pauli_z))
 
-    output_dict = {
-        "U_operators": U_operators,
-        "p_00": p_cog_new_00,
-        "p_11": p_cog_new_11,
-    }
-
-    #return expectation, p_cog_new_11, output_dict
     return expectation + bias
 
 

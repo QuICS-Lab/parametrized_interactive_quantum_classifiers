@@ -1,4 +1,4 @@
-from iqc_multitargets import iqc_de_multi_target, next_power_of_two
+# from iqc_multitargets import iqc_de_multi_target, next_power_of_two
 import numpy as np
 import jax
 import jax.numpy as jnp
@@ -9,7 +9,7 @@ from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 
 
 class IQC(BaseEstimator, ClassifierMixin):
-    """Classificador IQC binário treinável por JAX/Optax ou PSO."""
+    """Binary IQC classifier trainable with JAX/Optax or PSO."""
 
     def __init__(
         self,
@@ -34,50 +34,46 @@ class IQC(BaseEstimator, ClassifierMixin):
         self.options_optimizer = options_optimizer
         self.verbose = verbose
         self.random_state = random_state
-        self.iqc = iqc  # Default IQC model; can be changed to iqc_britoetal if needed
+        self.iqc = iqc
         self.number_of_params = number_of_params
         self.model_name = model_name
         self.N_e = N_e
 
-        if self.iqc == None:
+        if self.iqc is None:
             raise ValueError("IQC model must be provided. Use iqc_zhangetal or iqc_britoetal.")
-        if self.model_name == None:
+        if self.model_name is None:
             raise ValueError("Model name must be provided. Use 'iqc_zhangetal' or 'iqc_britoetal'.")
 
     def model(self, x, params):
-        """Funcionamento do IQC; subclasses podem sobrescrever somente este método."""
-        if self.model_name == "iqc_zhangetal":
-            return self.iqc(x, np.array([1, 1, 1, 1]), params)  # Default alpha values; can be changed if needed
-        elif self.model_name == "iqc_britoetal":
-            return self.iqc(x, np.array([1, 1, 1, 1]), params)  # Default alpha values; can be changed if needed
-        elif self.model_name == "iqc_alfa":
-            return self.iqc(x, params[0:4], params[4:])  # Default alpha values; can be changed if needed
-        elif self.model_name == "iqc_multidimensional_2":
-            return self.iqc(x, params[0:4],params[4:], N_e=self.N_e)
-        elif self.model_name == "iqc_multidimensional_4":
-            return self.iqc(x, params[0:4],params[4:], N_e=self.N_e)
-        elif self.model_name == "iqc_multidimensional_8":
-            return self.iqc(x, params[0:4],params[4:], N_e=self.N_e)
-        elif self.model_name == "iqc_de":
-            return self.iqc(x, params[0:4],params[4:], N_e=self.N_e)
-        elif self.model_name == "iqc_de_multitarget_2":
-            return self.iqc(x, params[0:2*4],params[2*4:], N_e=self.N_e,N_qubits_tgt=2)
-        elif self.model_name == "iqc_de_multitarget_3":
-            return self.iqc(x, params[0:3*4],params[3*4:], N_e=self.N_e,N_qubits_tgt=3)
-        elif self.model_name == "iqc_multidimensional_2_multitarget_2":
-            return self.iqc(x, params[0:2*4],params[2*4:], N_e=self.N_e,N_qubits_tgt=2)
-        elif self.model_name == "iqc_multidimensional_2_multitarget_3":     
-         return self.iqc(x, params[0:3*4],params[3*4:], N_e=self.N_e,N_qubits_tgt=3)
-        elif self.model_name == "iqc_multidimensional_4_multitarget_2":
-            return self.iqc(x, params[0:2*4],params[2*4:], N_e=self.N_e,N_qubits_tgt=2)
-        elif self.model_name == "iqc_multidimensional_4_multitarget_3":
-            return self.iqc(x, params[0:3*4],params[3*4:], N_e=self.N_e,N_qubits_tgt=3)
-        elif self.model_name == "iqc_multidimensional_8_multitarget_2":
-            return self.iqc(x, params[0:2*4],params[2*4:], N_e=self.N_e,N_qubits_tgt=2)
-        elif self.model_name == "iqc_multidimensional_8_multitarget_3":
-            return self.iqc(x, params[0:3*4],params[3*4:], N_e=self.N_e,N_qubits_tgt=3)       
-        else:
-            raise ValueError("Invalid model name. Use 'iqc_zhangetal' or 'iqc_britoetal'.")
+        """Evaluate the selected IQC model."""
+        if self.model_name in ("iqc_zhangetal", "iqc_britoetal"):
+            return self.iqc(x, np.array([1, 1, 1, 1]), params)
+        if self.model_name == "iqc_alfa":
+            return self.iqc(x, params[:4], params[4:])
+        if self.model_name in (
+            "iqc_multidimensional_2",
+            "iqc_multidimensional_4",
+            "iqc_multidimensional_8",
+            "iqc_de",
+        ):
+            return self.iqc(x, params[:4], params[4:], N_e=self.N_e)
+        # elif self.model_name == "iqc_de_multitarget_2":
+        #     return self.iqc(x, params[:8], params[8:], N_e=self.N_e, N_qubits_tgt=2)
+        # elif self.model_name == "iqc_de_multitarget_3":
+        #     return self.iqc(x, params[:12], params[12:], N_e=self.N_e, N_qubits_tgt=3)
+        # elif self.model_name == "iqc_multidimensional_2_multitarget_2":
+        #     return self.iqc(x, params[:8], params[8:], N_e=self.N_e, N_qubits_tgt=2)
+        # elif self.model_name == "iqc_multidimensional_2_multitarget_3":
+        #     return self.iqc(x, params[:12], params[12:], N_e=self.N_e, N_qubits_tgt=3)
+        # elif self.model_name == "iqc_multidimensional_4_multitarget_2":
+        #     return self.iqc(x, params[:8], params[8:], N_e=self.N_e, N_qubits_tgt=2)
+        # elif self.model_name == "iqc_multidimensional_4_multitarget_3":
+        #     return self.iqc(x, params[:12], params[12:], N_e=self.N_e, N_qubits_tgt=3)
+        # elif self.model_name == "iqc_multidimensional_8_multitarget_2":
+        #     return self.iqc(x, params[:8], params[8:], N_e=self.N_e, N_qubits_tgt=2)
+        # elif self.model_name == "iqc_multidimensional_8_multitarget_3":
+        #     return self.iqc(x, params[:12], params[12:], N_e=self.N_e, N_qubits_tgt=3)
+        raise ValueError(f"Invalid model name: {self.model_name!r}.")
 
     def _encode_y(self, y):
         return jnp.asarray(np.where(y == self.classes_[0], -1.0, 1.0))
@@ -102,7 +98,7 @@ class IQC(BaseEstimator, ClassifierMixin):
         X, y = check_X_y(X, y)
         self.classes_ = np.unique(y)
         if self.classes_.size != 2:
-            raise ValueError("IQC suporta apenas classificação binária.")
+            raise ValueError("IQC supports binary classification only.")
 
         self.n_features_in_ = X.shape[1]
 
@@ -111,12 +107,12 @@ class IQC(BaseEstimator, ClassifierMixin):
         if self.method == "pso":
             return self.fit_pso(X, y)
 
-        raise ValueError("method deve ser 'optimizer' ou 'pso'.")
+        raise ValueError("method must be 'optimizer' or 'pso'.")
 
     def fit_optimizer(self, X, y):
         X = jnp.asarray(X)
         y = self._encode_y(y)
-        params = self._initial_params()  # +1 for bias term
+        params = self._initial_params()
 
         optimizer = self.optimizer
         if optimizer is None:
@@ -124,21 +120,6 @@ class IQC(BaseEstimator, ClassifierMixin):
 
         opt_state = optimizer.init(params)
 
-        """
-        loss_and_grad = jax.jit(jax.value_and_grad(self._loss))
-
-        for step in range(self.max_steps):
-            loss, grads = loss_and_grad(params, X, y)
-            updates, opt_state = optimizer.update(grads, opt_state, params)
-            params = optax.apply_updates(params, updates)
-
-            if self.verbose and step % 100 == 0:
-                print(f"step={step}, loss={float(loss):.6f}")
-
-        self.params_ = np.asarray(params)
-        self.best_loss_ = float(self._loss(params, X, y))
-        return self
-        """
         def train_step(params, opt_state):
             loss, grads = jax.value_and_grad(
                 self._loss
@@ -170,72 +151,20 @@ class IQC(BaseEstimator, ClassifierMixin):
         return self
 
     def fit_pso(self, X, y):
-        """
-        try:
-            from pyswarms.single import GlobalBestPSO
-        except ImportError as exc:
-            raise ImportError(
-                "O treinamento por PSO requer a biblioteca pyswarms."
-            ) from exc
-
-        X_jax = jnp.asarray(X)
-        y_jax = self._encode_y(y)
-
-        def objective(particles):
-            return np.asarray([
-                float(self._loss(jnp.asarray(params), X_jax, y_jax))
-                for params in particles
-            ])
-
-        
-        options = self.options_optimizer
-        if options is None:
-            options = {"c1": 0.5, "c2": 0.3, "w": 0.9}
-
-        optimizer = GlobalBestPSO(
-            n_particles=self.n_particles,
-            dimensions=self.number_of_params,  # +1 for bias term
-            options=options,
-        )
-        for ITER in range(self.max_steps):
-            best_loss, best_params = optimizer.optimize(
-                            objective,
-                            iters=1,
-                            verbose=self.verbose,
-            )
-            if best_loss <= 0.001:
-                print("finalizado na iteracao", ITER)
-                break
-            
-
-        self.params_ = np.asarray(best_params)
-        self.best_loss_ = float(best_loss)
-        return self
-        """
    
         try:
             from pyswarms.single import GlobalBestPSO
         except ImportError as exc:
             raise ImportError(
-                "O treinamento por PSO requer a biblioteca pyswarms."
+                "PSO training requires the pyswarms package."
             ) from exc
 
         X_jax = jnp.asarray(X, dtype=jnp.float32)
         y_jax = self._encode_y(y)
 
         loss_jit = jax.jit(self._loss)
-
-        # Compila antes de iniciar o PSO.
-        initial_params = jnp.zeros(
-            self.number_of_params,
-            dtype=jnp.float32,
-        )
-
-        loss_jit(
-            initial_params,
-            X_jax,
-            y_jax,
-        ).block_until_ready()
+        initial_params = jnp.zeros(self.number_of_params, dtype=jnp.float32)
+        loss_jit(initial_params, X_jax, y_jax).block_until_ready()
 
         def objective(particles):
             return np.asarray([
@@ -272,7 +201,7 @@ class IQC(BaseEstimator, ClassifierMixin):
 
             if best_loss <= 0.001:
                 if self.verbose:
-                    print("Finalizado na iteração", iteration)
+                    print("Finished at iteration", iteration)
                 break
 
         self.params_ = np.asarray(best_params)
