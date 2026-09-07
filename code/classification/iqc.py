@@ -54,9 +54,10 @@ class IQC(BaseEstimator, ClassifierMixin):
             "iqc_multidimensional_2",
             "iqc_multidimensional_4",
             "iqc_multidimensional_8",
-            "iqc_de",
         ):
             return self.iqc(x, params[:4], params[4:], N_e=self.N_e)
+        # elif self.model_name == "iqc_de":
+        #     return self.iqc(x, params[:4], params[4:], N_e=self.N_e)
         # elif self.model_name == "iqc_de_multitarget_2":
         #     return self.iqc(x, params[:8], params[8:], N_e=self.N_e, N_qubits_tgt=2)
         # elif self.model_name == "iqc_de_multitarget_3":

@@ -1,7 +1,7 @@
 # from iqc_multitargets import iqc_de_multi_target, iqc_multidimensional_multi_target
 from iqc_zhangetal import iqc_zhangetal, iqc_britoetal
 from iqc_multdimensional import iqc_multidimensional
-from iqc_de import iqc_de, next_power_of_two
+# from iqc_de import iqc_de, next_power_of_two
 from sklearn.datasets import load_iris, load_wine, make_blobs, make_circles, make_moons
 
 def generate_models_in_dictionary(number_of_features):
@@ -40,11 +40,11 @@ def generate_models_in_dictionary(number_of_features):
                         'iqc': iqc_multidimensional,
                         'number_of_params': number_of_features * 8 + 4 + 1,
                     },
-                    "iqc_de":
-                    {
-                        'iqc': iqc_de,
-                        'number_of_params': next_power_of_two(number_of_features) ** 2 + 5,
-                    },
+                    # "iqc_de":
+                    # {
+                    #     'iqc': iqc_de,
+                    #     'number_of_params': next_power_of_two(number_of_features) ** 2 + 5,
+                    # },
                     
                     # "iqc_de_multitarget_2":
                     # {
