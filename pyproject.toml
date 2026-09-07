@@ -3,7 +3,7 @@ name = "parametrized-interactive-quantum-classifiers"
 version = "0.1.0"
 description = "Code for parametrized interactive quantum classifier experiments."
 readme = "README.md"
-requires-python = ">=3.12,<3.13"
+requires-python = ">=3.11,<3.12"
 dependencies = [
     "jax>=0.6",
     "matplotlib>=3.9",
