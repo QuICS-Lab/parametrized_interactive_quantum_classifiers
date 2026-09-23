@@ -1,11 +1,13 @@
 
 # Parametrized Interactive Quantum Classifiers
 
-Code accompanying *Fourier Analysis of Parametrized Interactive Quantum Classifiers*. The repository contains binary and multiclass classification experiments, plus an expressibility benchmark for IQC variants.
+Code accompanying *Fourier Analysis of Parametrized Interactive Quantum Classifiers*. The repository contains binary and multiclass classification experiments, plus an expressibility benchmark for IQC variants. 
+
+The repository contains additional synthetic datasets (circle and moons) used during development but excluded from the final benchmark analysis. The results reported in the manuscript use the seven synthetic datasets and four real-world datasets listed in the paper.
 
 ## Requirements
 
-- macOS, Linux, or Windows with Python 3.12 available.
+- macOS, Linux, or Windows with Python 3.11 available.
 - [uv](https://docs.astral.sh/uv/getting-started/installation/) 0.11 or later.
 
 The exact Python range and project dependencies are declared in [pyproject.toml](pyproject.toml). The committed [uv.lock](uv.lock) pins the resolved dependency set for reproducible installations.
@@ -49,7 +51,7 @@ Open one of the notebooks under `code/classification/` and select the Python ker
 - `IQC_experiments_multiclass.ipynb`: multiclass classification with gradient optimization.
 - `IQC_experiments_multiclass_PSO.ipynb`: multiclass classification with PSO.
 
-The multiclass notebooks download the Pima Indians Diabetes and Caesarian Section datasets when `experiments_params.py` is imported, so they require network access on their first execution. The notebooks write result dictionaries to `.pkl` files in `code/classification/`.
+The multiclass notebooks download the Pima Indians Diabetes and Caesarian Section datasets when `experiments_params.py` is imported, so they require network access on their first execution. The notebooks generate result dictionaries as .pkl files in code/classification/. These generated files are not versioned in the repository; processed results used for the statistical analysis are provided in statistical_comparison.xlsx.
 
 To execute a notebook non-interactively, use:
 
